@@ -345,7 +345,7 @@ ValidForGrooveStats = function(player)
 	if SL.Global.GameMode == "ITG" then
 		for i, window in ipairs(TimingWindows) do
 			-- Only check if the Timing Window is actually "enabled".
-			if i > 5 or SL.Global.ActiveModifiers.TimingWindows[i] then
+			if i > 5 or SL[ToEnumShortString(player)].ActiveModifiers.TimingWindows[i] then
 				valid[7] = valid[7] and FloatEquals(PREFSMAN:GetPreference("TimingWindowSeconds"..window) + TWA, ExpectedWindows[i])
 			end
 		end

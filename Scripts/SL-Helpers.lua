@@ -312,20 +312,20 @@ SetGameModePreferences = function()
 	end
 
 	--------------------------------------------
-	-- If we're switching to Casual mode,
-	-- we want to reduce the number of judgments,
-	-- so turn Decents and WayOffs off now.
-	if SL.Global.GameMode == "Casual" then
-		SL.Global.ActiveModifiers.TimingWindows = {true,true,true,false,false}
-
-	-- Otherwise, we want all TimingWindows enabled by default.
-	else
- 		SL.Global.ActiveModifiers.TimingWindows = {true,true,true,true,true}
-	end
-
-	--------------------------------------------
 	-- loop through human players and apply whatever mods need to be set now
 	for player in ivalues(GAMESTATE:GetHumanPlayers()) do
+		local pn = ToEnumShortString(player)
+		-- If we're switching to Casual mode,
+		-- we want to reduce the number of judgments,
+		-- so turn Decents and WayOffs off now.
+		if SL.Global.GameMode == "Casual" then
+			SL[pn].ActiveModifiers.TimingWindows = {true,true,true,false,false}
+
+		-- Otherwise, we want all TimingWindows enabled by default.
+		else
+			SL[pn].ActiveModifiers.TimingWindows = {true,true,true,true,true}
+		end
+
 		-- Now that we've set the SL table for TimingWindows appropriately,
 		-- use it to apply TimingWindows.
 		local TW_OptRow = CustomOptionRow( "TimingWindows" )

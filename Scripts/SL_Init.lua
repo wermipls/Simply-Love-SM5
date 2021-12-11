@@ -37,6 +37,8 @@ local PlayerDefaults = {
 				ErrorBar = "None",
 				ErrorBarUp = false,
 				ErrorBarMultiTick = false,
+
+				TimingWindows = {true, true, true, true, true},
 			}
 			self.Streams = {
 				-- Chart identifiers for caching purposes.
@@ -92,7 +94,6 @@ local GlobalDefaults = {
 		initialize = function(self)
 			self.ActiveModifiers = {
 				MusicRate = 1.0,
-				TimingWindows = {true, true, true, true, true},
 			}
 			self.Stages = {
 				PlayedThisGame = 0,

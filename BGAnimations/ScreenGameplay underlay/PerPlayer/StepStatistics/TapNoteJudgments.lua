@@ -30,7 +30,7 @@ end
 local leadingZeroAttr
 local row_height = 35
 
-local windows = SL.Global.ActiveModifiers.TimingWindows
+local windows = SL[ToEnumShortString(player)].ActiveModifiers.TimingWindows
 
 -- -----------------------------------------------------------------------
 
@@ -67,7 +67,7 @@ for index, window in ipairs(TNS.Types) do
 				self:halign( PlayerNumber:Reverse()[OtherPlayer[player]] )
 			end
 
-			if SL.Global.ActiveModifiers.TimingWindows[index] or index==#TNS.Types then
+			if SL[ToEnumShortString(player)].ActiveModifiers.TimingWindows[index] or index==#TNS.Types then
 				self:diffuse( SL.JudgmentColors[SL.Global.GameMode][index] )
 				leadingZeroAttr = { Length=(digits-1), Diffuse=Brightness(self:GetDiffuse(), 0.35) }
 				self:AddAttribute(0, leadingZeroAttr )
