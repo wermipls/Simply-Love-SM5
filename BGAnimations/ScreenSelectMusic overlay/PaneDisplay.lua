@@ -67,32 +67,22 @@ local GetScoresRequestProcessor = function(res, master)
 	-- we don't run the RequestResponseActor in CourseMode.
 	if GAMESTATE:GetCurrentSong() == nil then return end
 
-	if res == nil then
-		for i=1,2 do
-			local paneDisplay = master:GetChild("PaneDisplayP"..i)
-			local loadingText = paneDisplay:GetChild("Loading")
-			loadingText:settext("Timed Out")
-		end
-
-		return
-	end
+	local data = res.statusCode == 200 and JsonDecode(res.body) or nil
 
 	for i=1,2 do
 		local paneDisplay = master:GetChild("PaneDisplayP"..i)
-
 		local machineScore = paneDisplay:GetChild("MachineHighScore")
 		local machineName = paneDisplay:GetChild("MachineHighScoreName")
-
+	
 		local playerScore = paneDisplay:GetChild("PlayerHighScore")
 		local playerName = paneDisplay:GetChild("PlayerHighScoreName")
-
+	
 		local loadingText = paneDisplay:GetChild("Loading")
 
 		local playerStr = "player"..i
 		local rivalNum = 1
 		local worldRecordSet = false
 		local personalRecordSet = false
-		local data = res["status"] == "success" and res["data"] or nil
 
 		-- First check to see if the leaderboard even exists.
 		if data and data[playerStr] and data[playerStr]["gsLeaderboard"] then
@@ -168,7 +158,15 @@ local GetScoresRequestProcessor = function(res, master)
 			rivalName:settext("----")
 		end
 
-		if res["status"] == "success" then
+		if res.error then
+			local error = ToEnumShortString(res.error)
+			if error == "Timeout" then
+				loadingText:queuecommand("Timed Out")
+			elseif error ~= "Cancelled" then
+				loadingText:queuecommand("Failed")
+				SL.GrooveStats.GetScores = false
+			end
+		else
 			if data and data[playerStr] then
 				if data[playerStr]["isRanked"] then
 					loadingText:settext("Loaded")
@@ -179,10 +177,6 @@ local GetScoresRequestProcessor = function(res, master)
 				-- Just hide the text
 				loadingText:queuecommand("Set")
 			end
-		elseif res["status"] == "fail" then
-			loadingText:settext("Failed")
-		elseif res["status"] == "disabled" then
-			loadingText:settext("Disabled")
 		end
 	end
 end
@@ -218,7 +212,7 @@ local PaneItems = {
 -- -----------------------------------------------------------------------
 local af = Def.ActorFrame{ Name="PaneDisplayMaster" }
 
-af[#af+1] = RequestResponseActor("GetScores", 10, 17, 50)..{
+af[#af+1] = RequestResponseActor(17, 50)..{
 	OnCommand=function(self)
 		-- Create variables for both players, even if they're not currently active.
 		self.IsParsing = {false, false}
@@ -244,17 +238,14 @@ af[#af+1] = RequestResponseActor("GetScores", 10, 17, 50)..{
 
 		-- This makes sure that the Hash in the ChartInfo cache exists.
 		local sendRequest = false
-		local data = {
-			action="groovestats/player-scores",
-		}
+		local headers = {}
+		local query = {}
 
 		for i=1,2 do
 			local pn = "P"..i
 			if SL[pn].ApiKey ~= "" and SL[pn].Streams.Hash ~= "" then
-				data["player"..i] = {
-					chartHash=SL[pn].Streams.Hash,
-					apiKey=SL[pn].ApiKey
-				}
+				query["chartHashP"..i] = SL[pn].Streams.Hash
+				headers["x-api-key-player-"..i] = SL[pn].ApiKey
 				local loadingText = master:GetChild("PaneDisplayP"..i):GetChild("Loading")
 				loadingText:visible(true)
 				loadingText:settext("Loading ...")
@@ -264,10 +255,13 @@ af[#af+1] = RequestResponseActor("GetScores", 10, 17, 50)..{
 
 		-- Only send the request if it's applicable.
 		if sendRequest then
-			MESSAGEMAN:Broadcast("GetScores", {
-				data=data,
+			self:playcommand("MakeRequest", {
+				endpoint="player-scores.php?"..NETWORK:EncodeQueryParameters(query),
+				method="GET",
+				headers=headers,
+				timeout=10,
+				callback=GetScoresRequestProcessor,
 				args=master,
-				callback=GetScoresRequestProcessor
 			})
 		end
 	end
