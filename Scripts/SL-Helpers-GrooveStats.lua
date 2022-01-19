@@ -4,6 +4,10 @@
 -- If we make a new request while we are already waiting on a response, we
 -- will cancel the current request and make a new one.
 --
+-- Args:
+--     x: The x position of the loading spinner.
+--     y: The y position of the loading spinner.
+--
 -- Usage:
 -- af[#af+1] = RequestResponseActor(100, 0)
 --
@@ -11,17 +15,18 @@
 --
 -- af.OnCommand=function(self)
 --     self:playcommand("MakeRequest", {
---     endpoint="new-session.php?chartHashVersion="..SL.GrooveStats.ChartHashVersion,
---     method="GET",
---     timeout=10,
---     callback=NewSessionRequestProcessor,
---     args=self:GetParent()
--- })
+--         endpoint="new-session.php?chartHashVersion="..SL.GrooveStats.ChartHashVersion,
+--         method="GET",
+--         timeout=10,
+--         callback=NewSessionRequestProcessor,
+--         args=self:GetParent()
+--     })
 -- end
 --
--- (Alternatively, the OnCommand can be concatenated on to the returned actor itself.)
+-- (Alternatively, the OnCommand can be concatenated to the returned actor itself.)
 
--- The params table passed to the playcommand can have the following keys (all optional):
+-- The params table passed to the playcommand can have the following keys.
+-- All these fields are optional because there are some defaults in place.
 --
 -- endpoint: string, the endpoint at api.groovestats.com to send the request to.
 -- method: string, the type of request to make.
@@ -31,13 +36,10 @@
 -- timeout: number, the amount of time to wait for the request to complete in seconds.
 -- callback: function, callback to process the response. It can take up to two
 --       parameters:
---           data: The JSON response which has been converted back to a lua table
+--           res: The JSON response which has been converted back to a lua table
 --           args: The provided args passed as is.
 -- args: any, arguments that will be made accesible to the callback function. This
 --       can of any type as long as the callback knows what to do with it.
---
--- x: The x position of the loading spinner.
--- y: The y position of the loading spinner.
 RequestResponseActor = function(x, y)
 	-- Sanitize the timeout value.
 	local url_prefix = "https://api.groovestats.com/"
@@ -200,7 +202,7 @@ end
 -- -----------------------------------------------------------------------
 -- The common conditions required to use the GrooveStats services.
 -- Currently the conditions are:
---  - We initially got a GrooveStats conenction.
+--  - We were successfully able to make a GrooveStats conenction previously.
 --  - We must be in the "dance" game mode (not "pump", etc)
 --  - We must be in either ITG or FA+ mode.
 --  - At least one Api Key must be available (this condition may be relaxed in the future)

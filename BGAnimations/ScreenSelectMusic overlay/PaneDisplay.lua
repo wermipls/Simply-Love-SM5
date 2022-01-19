@@ -73,10 +73,10 @@ local GetScoresRequestProcessor = function(res, master)
 		local paneDisplay = master:GetChild("PaneDisplayP"..i)
 		local machineScore = paneDisplay:GetChild("MachineHighScore")
 		local machineName = paneDisplay:GetChild("MachineHighScoreName")
-	
+
 		local playerScore = paneDisplay:GetChild("PlayerHighScore")
 		local playerName = paneDisplay:GetChild("PlayerHighScoreName")
-	
+
 		local loadingText = paneDisplay:GetChild("Loading")
 
 		local playerStr = "player"..i
