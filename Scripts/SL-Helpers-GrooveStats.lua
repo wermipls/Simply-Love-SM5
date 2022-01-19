@@ -46,16 +46,23 @@ RequestResponseActor = function(x, y)
 		InitCommand=function(self)
 			self.request_time = -1
 			self.timeout = -1
-			self.future = nil
+			self.request_handler = nil
 			self:xy(x, y)
+		end,
+		OffCommand=function(self)
+			-- Cancel the request if this actor will be destructed soon.
+			if self.request_handler then
+				self.request_handler:Cancel()
+				self.request_handler = nil
+			end
 		end,
 		MakeRequestCommand=function(self, params)
 			if not params then return end
 
 			-- Cancel any existing requests if we're waiting on one at the moment.
-			if self.future then
-				self.future:Cancel()
-				self.future = nil
+			if self.request_handler then
+				self.request_handler:Cancel()
+				self.request_handler = nil
 			end
 			self:GetChild("Spinner"):visible(true)
 
@@ -66,14 +73,14 @@ RequestResponseActor = function(x, y)
 			local headers = params.headers
 
 			-- Attempt to make the request
-			self.future = NETWORK:HttpRequest{
+			self.request_handler = NETWORK:HttpRequest{
 				url=url_prefix..endpoint,
 				method=method,
 				body=body,
 				headers=headers,
 				connectTimeout=timeout,
 				onResponse=function(response)
-					self.future = nil
+					self.request_handler = nil
 					if params.callback then
 						params.callback(response, params.args)
 					end
@@ -92,9 +99,9 @@ RequestResponseActor = function(x, y)
 				timeout=self.timeout,
 				remaining_time=remaining_time
 			})
-			-- Only loop if the request is still on going.
-			-- The callback always resets the future once its finished.
-			if self.future then
+			-- Only loop if the request is still ongoing.
+			-- The callback always resets the request_handler once its finished.
+			if self.request_handler then
 				self:sleep(0.5):queuecommand("RequestLoop")
 			end
 		end,
