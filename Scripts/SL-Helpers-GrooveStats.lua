@@ -59,6 +59,7 @@ RequestResponseActor = function(x, y)
 			end
 		end,
 		MakeRequestCommand=function(self, params)
+			self:stoptweening()
 			if not params then return end
 
 			-- Cancel any existing requests if we're waiting on one at the moment.
@@ -83,6 +84,12 @@ RequestResponseActor = function(x, y)
 				connectTimeout=timeout,
 				onResponse=function(response)
 					self.request_handler = nil
+					-- If we get a permanent error, make sure we "disconnect" from
+					-- GrooveStats until we recheck on ScreenTitleMenu.
+					if (response.statusCode >= 400 and response.statusCode < 499 and
+							response.statusCode ~= 429) then
+						SL.GrooveStats.IsConnected = false
+					end
 					if params.callback then
 						params.callback(response, params.args)
 					end

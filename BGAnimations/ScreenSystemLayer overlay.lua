@@ -260,20 +260,22 @@ local NewSessionRequestProcessor = function(res, gsInfo)
 	service3:visible(false)
 
 	SL.GrooveStats.IsConnected = false
-	if res.statusCode == 504 then
-		groovestats:settext("Timed Out")
-		return
-	elseif res.statusCode ~= 200 then
-		service1:settext("Failed to Load 😞"):visible(true)
+	if res.error then
+		local error = ToEnumShortString(res.error)
+		if error == "Timeout" then
+			groovestats:settext("Timed Out")
+		elseif error ~= "Cancelled" then
+			service1:settext("Failed to Load 😞"):visible(true)
 
-		-- These default to false, but may have changed throughout the game's lifetime.
-		-- It doesn't hurt to explicitly set them to false.
-		SL.GrooveStats.GetScores = false
-		SL.GrooveStats.Leaderboard = false
-		SL.GrooveStats.AutoSubmit = false
-		groovestats:settext("❌ GrooveStats")
+			-- These default to false, but may have changed throughout the game's lifetime.
+			-- It doesn't hurt to explicitly set them to false.
+			SL.GrooveStats.GetScores = false
+			SL.GrooveStats.Leaderboard = false
+			SL.GrooveStats.AutoSubmit = false
+			groovestats:settext("❌ GrooveStats")
 
-		DiffuseEmojis(service1:ClearAttributes())
+			DiffuseEmojis(service1:ClearAttributes())
+		end
 		return
 	end
 

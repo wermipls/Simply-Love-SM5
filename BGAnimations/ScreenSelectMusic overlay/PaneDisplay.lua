@@ -161,9 +161,9 @@ local GetScoresRequestProcessor = function(res, master)
 		if res.error then
 			local error = ToEnumShortString(res.error)
 			if error == "Timeout" then
-				loadingText:queuecommand("Timed Out")
+				loadingText:settext("Timed Out")
 			elseif error ~= "Cancelled" then
-				loadingText:queuecommand("Failed")
+				loadingText:settext("Failed")
 				SL.GrooveStats.GetScores = false
 			end
 		else
@@ -231,7 +231,18 @@ af[#af+1] = RequestResponseActor(17, 50)..{
 	ChartParsedCommand=function(self)
 		local master = self:GetParent()
 
-		if not IsServiceAllowed(SL.GrooveStats.GetScores) then return end
+		if not IsServiceAllowed(SL.GrooveStats.GetScores) then
+			if not SL.GrooveStats.IsConnected then
+				-- loadingText is made visible when requests complete.
+				-- If we disable the service from a previous request, surface it to the user here.
+				for i=1,2 do
+					local loadingText = master:GetChild("PaneDisplayP"..i):GetChild("Loading")
+					loadingText:settext("Disabled")
+					loadingText:visible(true)
+				end
+			end
+			return
+		end
 
 		-- Make sure we're still not parsing either chart.
 		if self.IsParsing[1] or self.IsParsing[2] then return end

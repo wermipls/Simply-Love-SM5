@@ -218,7 +218,26 @@ local af = Def.ActorFrame{
 	},
 	RequestResponseActor(17, 50)..{
 		SendLeaderboardRequestCommand=function(self)
-			if not IsServiceAllowed(SL.GrooveStats.Leaderboard) then return end
+			if not IsServiceAllowed(SL.GrooveStats.Leaderboard) then
+				if SL.GrooveStats.IsConnected then
+					-- If we disable the service from a previous request, surface it to the user here.
+					-- (Even though the Leaderboard option is already removed from the sort menu, so this is extra).
+					for i=1, 2 do
+						local pn = "P"..i
+						local leaderboard = self:GetParent():GetChild(pn.."Leaderboard")
+						for j=1, NumEntries do
+							local entry = leaderboard:GetChild("LeaderboardEntry"..j)
+							if j == 1 then
+								SetEntryText("", "Disabled", "", "", entry)
+							else
+								-- Empty out the remaining rows.
+								SetEntryText("", "", "", "", entry)
+							end
+						end
+					end
+				end
+				return
+			end
 
 			local sendRequest = false
 			local headers = {}
