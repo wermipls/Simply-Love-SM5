@@ -86,9 +86,15 @@ RequestResponseActor = function(x, y)
 					self.request_handler = nil
 					-- If we get a permanent error, make sure we "disconnect" from
 					-- GrooveStats until we recheck on ScreenTitleMenu.
-					if (response.statusCode >= 400 and response.statusCode < 499 and
-							response.statusCode ~= 429) then
-						SL.GrooveStats.IsConnected = false
+					if response.statusCode then
+						local body = nil
+						local code = response.statusCode
+						if code == 200 then
+							body = JsonDecode(response.body)
+						end
+						if (code >= 400 and code < 499 and code ~= 429) or (code == 200 and body and body.error and #body.error) then
+							SL.GrooveStats.IsConnected = false
+						end
 					end
 					if params.callback then
 						params.callback(response, params.args)

@@ -279,7 +279,6 @@ local NewSessionRequestProcessor = function(res, gsInfo)
 		return
 	end
 
-	SL.GrooveStats.IsConnected = true
 	local data = JsonDecode(res.body)
 	if data == nil then return end
 
@@ -338,6 +337,7 @@ local NewSessionRequestProcessor = function(res, gsInfo)
 	-- All services are enabled, display a green check.
 	if SL.GrooveStats.GetScores and SL.GrooveStats.Leaderboard and SL.GrooveStats.AutoSubmit then
 		groovestats:settext("✔ GrooveStats")
+		SL.GrooveStats.IsConnected = true
 	-- All services are disabled, display a red X.
 	elseif not SL.GrooveStats.GetScores and not SL.GrooveStats.Leaderboard and not SL.GrooveStats.AutoSubmit then
 		groovestats:settext("❌ GrooveStats")
@@ -348,6 +348,7 @@ local NewSessionRequestProcessor = function(res, gsInfo)
 	-- Some combination of the two, we display a caution symbol.
 	else
 		groovestats:settext("⚠ GrooveStats")
+		SL.GrooveStats.IsConnected = true
 	end
 
 	DiffuseEmojis(groovestats:ClearAttributes())
