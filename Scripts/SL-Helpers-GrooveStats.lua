@@ -71,11 +71,13 @@ RequestResponseActor = function(x, y)
 			end
 			self:GetChild("Spinner"):visible(true)
 
-			self.timeout = params.timeout or 60
+			local timeout = params.timeout or 60
 			local endpoint = params.endpoint or ""
 			local method = params.method
 			local body = params.body
 			local headers = params.headers
+
+			self.timeout = timeout
 
 			-- Attempt to make the request
 			self.request_handler = NETWORK:HttpRequest{

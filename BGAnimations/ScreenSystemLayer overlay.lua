@@ -287,6 +287,7 @@ local NewSessionRequestProcessor = function(res, gsInfo)
 
 			DiffuseEmojis(service1:ClearAttributes())
 		end
+		DiffuseEmojis(groovestats:ClearAttributes())
 		return
 	end
 
