@@ -158,13 +158,12 @@ local GetScoresRequestProcessor = function(res, master)
 			rivalName:settext("----")
 		end
 
-		if res.error then
-			local error = ToEnumShortString(res.error)
-			if error == "Timeout" then
-				loadingText:settext("Timed Out")
-			elseif error ~= "Cancelled" then
+		if res.error or res.statusCode ~= 200 then
+			local error = res.error and ToEnumShortString(res.error) or nil
+			if res.statusCode ~= 200 or error ~= "Cancelled" then
 				loadingText:settext("Failed")
-				SL.GrooveStats.GetScores = false
+			elseif error == "Timeout" then
+				loadingText:settext("Timed Out")
 			end
 		else
 			if data and data[playerStr] then

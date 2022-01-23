@@ -41,7 +41,6 @@
 -- args: any, arguments that will be made accesible to the callback function. This
 --       can of any type as long as the callback knows what to do with it.
 RequestResponseActor = function(x, y)
-	-- Sanitize the timeout value.
 	local url_prefix = "https://api.groovestats.com/"
 
 	return Def.ActorFrame{
@@ -60,7 +59,10 @@ RequestResponseActor = function(x, y)
 		end,
 		MakeRequestCommand=function(self, params)
 			self:stoptweening()
-			if not params then return end
+			if not params then
+				Warn("No params specified for MakeRequestCommand.")
+				return
+			end
 
 			-- Cancel any existing requests if we're waiting on one at the moment.
 			if self.request_handler then
@@ -81,7 +83,8 @@ RequestResponseActor = function(x, y)
 				method=method,
 				body=body,
 				headers=headers,
-				connectTimeout=timeout,
+				connectTimeout=timeout/2,
+				transferTimeout=timeout/2,
 				onResponse=function(response)
 					self.request_handler = nil
 					-- If we get a permanent error, make sure we "disconnect" from

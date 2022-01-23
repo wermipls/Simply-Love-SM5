@@ -32,14 +32,14 @@ local AutoSubmitRequestProcessor = function(res, overlay)
 	local P1SubmitText = overlay:GetChild("AutoSubmitMaster"):GetChild("P1SubmitText")
 	local P2SubmitText = overlay:GetChild("AutoSubmitMaster"):GetChild("P2SubmitText")
 
-	if res.error then
-		local error = ToEnumShortString(res.error)
-		if error == "Timeout" then
-			if P1SubmitText then P1SubmitText:queuecommand("TimedOut") end
-			if P2SubmitText then P2SubmitText:queuecommand("TimedOut") end
-		elseif error ~= "Cancelled" then
+	if res.error or res.statusCode ~= 200 then
+		local error = res.error and ToEnumShortString(res.error) or nil
+		if res.statusCode ~= 200 or error ~= "Cancelled" then
 			if P1SubmitText then P1SubmitText:queuecommand("SubmitFailed") end
 			if P2SubmitText then P2SubmitText:queuecommand("SubmitFailed") end
+		elseif error == "Timeout" then
+			if P1SubmitText then P1SubmitText:queuecommand("TimedOut") end
+			if P2SubmitText then P2SubmitText:queuecommand("TimedOut") end
 		end
 		return
 	end

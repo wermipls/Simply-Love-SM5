@@ -95,14 +95,13 @@ end
 local LeaderboardRequestProcessor = function(res, master)
 	if master == nil then return end
 
-	if res.error then
-		local error = ToEnumShortString(res.error)
+	if res.error or res.statusCode ~= 200 then
+		local error = res.error and ToEnumShortString(res.error) or nil
 		local text = ""
-		if error == "Timeout" then
-			text = "Timed Out"
-		elseif error ~= "Cancelled" then
+		if res.statusCode ~= 200 or error ~= "Cancelled" then
 			text = "Failed to Load 😞"
-			SL.GrooveStats.Leaderboard = false
+		elseif error == "Timeout" then
+			text = "Timed Out"
 		end
 		for i=1, 2 do
 			local pn = "P"..i
