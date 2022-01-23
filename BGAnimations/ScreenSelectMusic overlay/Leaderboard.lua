@@ -98,10 +98,10 @@ local LeaderboardRequestProcessor = function(res, master)
 	if res.error or res.statusCode ~= 200 then
 		local error = res.error and ToEnumShortString(res.error) or nil
 		local text = ""
-		if res.statusCode ~= 200 or error ~= "Cancelled" then
-			text = "Failed to Load 😞"
-		elseif error == "Timeout" then
+		if error == "Timeout" then
 			text = "Timed Out"
+		elseif (res.statusCode ~= nil and res.statusCode ~= 200) or error ~= "Cancelled" then
+			text = "Failed to Load 😞"
 		end
 		for i=1, 2 do
 			local pn = "P"..i

@@ -262,7 +262,9 @@ local NewSessionRequestProcessor = function(res, gsInfo)
 	SL.GrooveStats.IsConnected = false
 	if res.error or res.statusCode ~= 200 then
 		local error = res.error and ToEnumShortString(res.error) or nil
-		if res.statusCode ~= 200 or error ~= "Cancelled" then
+		if error == "Timeout" then
+			groovestats:settext("Timed Out")
+		elseif (res.statusCode ~= nil and res.statusCode ~= 200) or error ~= "Cancelled" then
 			local text = ""
 			if error == "Blocked" then
 				text = "Access to GrooveStats Host Blocked"
@@ -284,8 +286,6 @@ local NewSessionRequestProcessor = function(res, gsInfo)
 			groovestats:settext("❌ GrooveStats")
 
 			DiffuseEmojis(service1:ClearAttributes())
-		elseif error == "Timeout" then
-			groovestats:settext("Timed Out")
 		end
 		return
 	end
