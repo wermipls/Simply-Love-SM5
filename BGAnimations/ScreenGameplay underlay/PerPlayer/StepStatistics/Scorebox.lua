@@ -54,14 +54,15 @@ local SetScoreData = function(data_idx, score_idx, rank, name, score, isSelf, is
 end
 
 local LeaderboardRequestProcessor = function(res, master)
-	if res.error then
-		local error = ToEnumShortString(res.error)
+	if master == nil then return end
+
+	if res.error or res.statusCode ~= 200 then
+		local error = res.error and ToEnumShortString(res.error) or nil
 		local text = ""
 		if error == "Timeout" then
 			text = "Timed Out"
-		elseif error ~= "Cancelled" then
+		elseif error or (res.statusCode ~= nil and res.statusCode ~= 200) then
 			text = "Failed to Load 😞"
-			SL.GrooveStats.Leaderboard = false
 		end
 		for i=1, 2 do
 			local pn = "P"..i
