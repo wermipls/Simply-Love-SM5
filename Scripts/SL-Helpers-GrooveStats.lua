@@ -50,6 +50,13 @@ RequestResponseActor = function(x, y)
 			self.request_handler = nil
 			self:xy(x, y)
 		end,
+		CancelCommand=function(self)
+			-- Cancel the request if we pressed back on the screen.
+			if self.request_handler then
+				self.request_handler:Cancel()
+				self.request_handler = nil
+			end
+		end,
 		OffCommand=function(self)
 			-- Cancel the request if this actor will be destructed soon.
 			if self.request_handler then
