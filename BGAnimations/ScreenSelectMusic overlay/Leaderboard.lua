@@ -100,7 +100,7 @@ local LeaderboardRequestProcessor = function(res, master)
 		local text = ""
 		if error == "Timeout" then
 			text = "Timed Out"
-		elseif (res.statusCode ~= nil and res.statusCode ~= 200) or error ~= "Cancelled" then
+		elseif error or (res.statusCode ~= nil and res.statusCode ~= 200) then
 			text = "Failed to Load 😞"
 		end
 		for i=1, 2 do

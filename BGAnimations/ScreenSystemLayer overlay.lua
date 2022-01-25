@@ -264,7 +264,7 @@ local NewSessionRequestProcessor = function(res, gsInfo)
 		local error = res.error and ToEnumShortString(res.error) or nil
 		if error == "Timeout" then
 			groovestats:settext("Timed Out")
-		elseif (res.statusCode ~= nil and res.statusCode ~= 200) or error ~= "Cancelled" then
+		elseif error or (res.statusCode ~= nil and res.statusCode ~= 200) then
 			local text = ""
 			if error == "Blocked" then
 				text = "Access to GrooveStats Host Blocked"

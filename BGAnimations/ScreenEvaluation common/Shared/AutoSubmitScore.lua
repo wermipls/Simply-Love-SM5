@@ -37,7 +37,7 @@ local AutoSubmitRequestProcessor = function(res, overlay)
 		if error == "Timeout" then
 			if P1SubmitText then P1SubmitText:queuecommand("TimedOut") end
 			if P2SubmitText then P2SubmitText:queuecommand("TimedOut") end
-		elseif (res.statusCode ~= nil and res.statusCode ~= 200) or error ~= "Cancelled" then
+		elseif error or (res.statusCode ~= nil and res.statusCode ~= 200) then
 			if P1SubmitText then P1SubmitText:queuecommand("SubmitFailed") end
 			if P2SubmitText then P2SubmitText:queuecommand("SubmitFailed") end
 		end

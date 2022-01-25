@@ -162,7 +162,7 @@ local GetScoresRequestProcessor = function(res, master)
 			local error = res.error and ToEnumShortString(res.error) or nil
 			if error == "Timeout" then
 				loadingText:settext("Timed Out")
-			elseif (res.statusCode ~= nil and res.statusCode ~= 200) or error ~= "Cancelled" then
+			elseif error or (res.statusCode ~= nil and res.statusCode ~= 200) then
 				loadingText:settext("Failed")
 			end
 		else
