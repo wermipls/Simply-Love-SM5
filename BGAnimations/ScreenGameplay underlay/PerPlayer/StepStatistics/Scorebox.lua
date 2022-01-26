@@ -24,7 +24,7 @@ for i=1,num_styles do
 		["scores"]={}
 	}
 	local scores = data["scores"]
-	for i=1,5 do
+	for i=1,NumEntries do
 		scores[#scores+1] = {
 			["rank"]="",
 			["name"]="",
@@ -96,10 +96,10 @@ local LeaderboardRequestProcessor = function(res, master)
 		end
 
 		if data[playerStr]["gsLeaderboard"] then
-			local numEntries = 0
+			local entryCount = 0
 			for entry in ivalues(data[playerStr]["gsLeaderboard"]) do
-				numEntries = numEntries + 1
-				SetScoreData(1, numEntries,
+				entryCount = entryCount + 1
+				SetScoreData(1, entryCount,
 								tostring(entry["rank"]),
 								entry["name"],
 								string.format("%.2f", entry["score"]/100),
@@ -110,13 +110,13 @@ local LeaderboardRequestProcessor = function(res, master)
 		end
 
 		if data[playerStr]["rpg"] then
-			local numEntries = 0
+			local entryCount = 0
 			SetScoreData(2, 1, "", "No Scores", "", false, false, false)
 
 			if data[playerStr]["rpg"]["rpgLeaderboard"] then
 				for entry in ivalues(data[playerStr]["rpg"]["rpgLeaderboard"]) do
-					numEntries = numEntries + 1
-					SetScoreData(2, numEntries,
+					entryCount = entryCount + 1
+					SetScoreData(2, entryCount,
 									tostring(entry["rank"]),
 									entry["name"],
 									string.format("%.2f", entry["score"]/100),
@@ -183,7 +183,7 @@ local af = Def.ActorFrame{
 			local sendRequest = false
 			local headers = {}
 			local query = {
-				maxLeaderboardResults=5,
+				maxLeaderboardResults=NumEntries,
 			}
 
 			if SL[pn].ApiKey ~= "" then
