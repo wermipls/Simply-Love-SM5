@@ -48,9 +48,11 @@ RequestResponseActor = function(x, y)
 			self.request_time = -1
 			self.timeout = -1
 			self.request_handler = nil
+			self.leaving_screen = false
 			self:xy(x, y)
 		end,
 		CancelCommand=function(self)
+			self.leaving_screen = true
 			-- Cancel the request if we pressed back on the screen.
 			if self.request_handler then
 				self.request_handler:Cancel()
@@ -58,6 +60,7 @@ RequestResponseActor = function(x, y)
 			end
 		end,
 		OffCommand=function(self)
+			self.leaving_screen = true
 			-- Cancel the request if this actor will be destructed soon.
 			if self.request_handler then
 				self.request_handler:Cancel()
@@ -114,7 +117,9 @@ RequestResponseActor = function(x, y)
 							params.callback(response, params.args)
 						end
 					end
-					self:GetChild("Spinner"):visible(false)
+					if not self.leaving_screen then
+						self:GetChild("Spinner"):visible(false)
+					end
 				end,
 			}
 			-- Keep track of when we started making the request
