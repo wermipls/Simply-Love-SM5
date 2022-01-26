@@ -3,6 +3,7 @@ local pn = ToEnumShortString(player)
 local n = player==PLAYER_1 and "1" or "2"
 local IsUltraWide = (GetScreenAspectRatio() > 21/9)
 local NoteFieldIsCentered = (GetNotefieldX(player) == _screen.cx)
+local NumEntries = 5
 
 local border = 5
 local width = 162
@@ -262,7 +263,7 @@ local af = Def.ActorFrame{
 
 }
 
-for i=1,5 do
+for i=1,NumEntries do
 	local y = -height/2 + 16 * i - 8
 	local zoom = 0.87
 
