@@ -111,15 +111,18 @@ RequestResponseActor = function(x, y)
 							SL.GrooveStats.IsConnected = false
 						end
 					end
+
+					if self.leaving_screen then
+						return
+					end
 					
 					if params.callback then
 						if not response.error or ToEnumShortString(response.error) ~= "Cancelled" then
 							params.callback(response, params.args)
 						end
 					end
-					if not self.leaving_screen then
-						self:GetChild("Spinner"):visible(false)
-					end
+
+					self:GetChild("Spinner"):visible(false)
 				end,
 			}
 			-- Keep track of when we started making the request
