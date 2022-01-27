@@ -65,19 +65,8 @@ local LeaderboardRequestProcessor = function(res, master)
 		elseif error or (res.statusCode ~= nil and res.statusCode ~= 200) then
 			text = "Failed to Load 😞"
 		end
-		for i=1, 2 do
-			local pn = "P"..i
-			local leaderboard = master:GetChild(pn.."Leaderboard")
-			for j=1, NumEntries do
-				local entry = leaderboard:GetChild("LeaderboardEntry"..j)
-				if j == 1 then
-					SetEntryText("", text, "", "", entry)
-				else
-					-- Empty out the remaining rows.
-					SetEntryText("", "", "", "", entry)
-				end
-			end
-		end
+		SetScoreData(1, 1, "", text, "", false, false, false)
+		master:queuecommand("Check")
 		return
 	end
 
