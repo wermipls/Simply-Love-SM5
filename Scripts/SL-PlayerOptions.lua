@@ -490,7 +490,7 @@ local Overrides = {
 		Values = { "MissBecauseHeld", "NPSGraphAtTop" }
 	},
 	ErrorBar = {
-		Values = { "None", "Colorful", "Monochrome", "Text" },
+		Values = { "None", "Colorful", "Monochrome", "longboi", "Text" },
 	},
 	-------------------------------------------------------------------------
 	ErrorBarOptions = {
