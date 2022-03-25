@@ -21,6 +21,8 @@ local permitted_profile_settings = {
 	ComboFont        = "string",
 	HoldJudgment     = "string",
 	BackgroundFilter = "string",
+	ShowFaPlusWindow = "boolean",
+	ShowEXScore      = "boolean",
 
 	----------------------------------
 	-- "Advanced Modifiers"
@@ -49,6 +51,7 @@ local permitted_profile_settings = {
 	Pacemaker            = "boolean",
 	MissBecauseHeld      = "boolean",
 	NPSGraphAtTop        = "boolean",
+	JudgmentTilt         = "boolean",
 	ErrorBar             = "string",
 	ErrorBarUp           = "boolean",
 	ErrorBarMultiTick    = "boolean",
@@ -60,9 +63,6 @@ local permitted_profile_settings = {
 	-- they have no player-facing OptionRows
 
 	PlayerOptionsString = "string",
-
-	EvalPanePrimary     = "number",
-	EvalPaneSecondary   = "number",
 }
 
 -- -----------------------------------------------------------------------
@@ -127,12 +127,6 @@ LoadProfileCustom = function(profile, dir)
 					-- the operator menu's Advanced Options
 					GAMESTATE:GetPlayerState(player):GetPlayerOptions("ModsLevel_Preferred"):FailSetting( GetDefaultFailType() )
 				end
-
-				if k=="EvalPaneSecondary" and type(v)==permitted_profile_settings.EvalPaneSecondary then
-					SL[pn].EvalPaneSecondary = v
-				elseif k=="EvalPanePrimary" and type(v)==permitted_profile_settings.EvalPanePrimary then
-					SL[pn].EvalPanePrimary   = v
-				end
 			end
 		end
 	end
@@ -158,8 +152,6 @@ SaveProfileCustom = function(profile, dir)
 			-- these values are saved outside the SL[pn].ActiveModifiers tables
 			-- and thus won't be handled in the loop above
 			output.PlayerOptionsString = SL[pn].PlayerOptionsString
-			output.EvalPanePrimary   = SL[pn].EvalPanePrimary
-			output.EvalPaneSecondary = SL[pn].EvalPaneSecondary
 
 			IniFile.WriteFile( path, {[theme_name]=output} )
 			break

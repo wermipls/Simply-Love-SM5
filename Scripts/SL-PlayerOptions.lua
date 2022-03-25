@@ -273,7 +273,7 @@ local Overrides = {
 	MusicRate = {
 		Choices = function()
 			local first	= 0.05
-			local last 	= 2
+			local last 	= 3
 			local step 	= 0.01
 
 			return stringify( range(first, last, step), "%g")
@@ -382,6 +382,40 @@ local Overrides = {
 			end
 		end
 	},
+	FaPlus = {
+		SelectType = "SelectMultiple",
+		Values = function()
+			if SL.Global.GameMode == "FA+" then
+				return { "ShowEXScore" }
+			end
+			return { "ShowFaPlusWindow", "ShowEXScore" }
+		end,
+		LoadSelections = function(self, list, pn)
+			local mods = SL[ToEnumShortString(pn)].ActiveModifiers
+			if SL.Global.GameMode == "FA+" then
+				list[1] = mods.ShowEXScore or false
+				return list
+			end
+
+			list[1] = mods.ShowFaPlusWindow or false
+			list[2] = mods.ShowEXScore or false
+			return list
+		end,
+		SaveSelections = function(self, list, pn)
+			local sl_pn = SL[ToEnumShortString(pn)]
+			local mods = sl_pn.ActiveModifiers
+			if SL.Global.GameMode == "FA+" then
+				 -- always disable in FA+ mode since it's handled engine side.
+				mods.ShowFaPlusWindow = false
+				mods.ShowEXScore   = list[1]
+				return
+			end
+			mods.ShowFaPlusWindow = list[1]
+			mods.ShowEXScore   = list[2]
+			-- Default to FA+ pane if either options are active.
+			sl_pn.EvalPanePrimary = (list[1] or list[2]) and 2 or 1
+		end
+	},
 	-------------------------------------------------------------------------
 	Hide = {
 		SelectType = "SelectMultiple",
@@ -425,10 +459,10 @@ local Overrides = {
 			local IsUltraWide = (GetScreenAspectRatio() > 21/9)
 			local mpn = GAMESTATE:GetMasterPlayerNumber()
 
-			-- if not ultrawide, StepStats only in single (not versus, not double)
-			if (not IsUltraWide and style and style:GetName() ~= "single")
-			-- if ultrawide, StepStats only in single and versus (not double)
-			or (IsUltraWide and style and not (style:GetName()=="single" or style:GetName()=="versus"))
+			-- Never available in double
+			if style and style:GetName() == "double"
+			-- In 4:3 versus mode
+			or (not IsUsingWideScreen() and style and style:GetName() == "versus")
 			-- if the notefield takes up more than half the screen width
 			or (notefieldwidth and notefieldwidth > _screen.w/2)
 			-- if the notefield is centered with 4:3 aspect ratio
@@ -475,7 +509,7 @@ local Overrides = {
 			local vals = { "ColumnFlashOnMiss", "SubtractiveScoring", "Pacemaker", "MissBecauseHeld", "NPSGraphAtTop" }
 
 			-- if not WideScreen (traditional DDR cabinets running at 640x480)
-			-- remove the last two choices and show an additional OptionRow with just those two
+			-- remove the last two choices to be appended an additional OptionRow (GameplayExtrasB below).
 			if not IsUsingWideScreen() then
 				table.remove(vals, 5)
 				table.remove(vals, 4)
@@ -483,11 +517,16 @@ local Overrides = {
 			return vals
 		end,
 	},
-
-	-- this is defined in metrics.ini to only appear when not IsUsingWideScreen()
 	GameplayExtrasB = {
 		SelectType = "SelectMultiple",
-		Values = { "MissBecauseHeld", "NPSGraphAtTop" }
+		Values = function()
+			if IsUsingWideScreen() then
+				return { "JudgmentTilt" }
+			else
+				-- Add in the two removed options if not in WideScreen.
+				return { "MissBecauseHeld", "NPSGraphAtTop", "JudgmentTilt" }
+			end
+		end
 	},
 	ErrorBar = {
 		Values = { "None", "Colorful", "Monochrome", "longboi", "Text" },

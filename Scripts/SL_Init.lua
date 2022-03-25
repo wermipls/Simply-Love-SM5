@@ -33,9 +33,13 @@ local PlayerDefaults = {
 				LifeMeterType = "Standard",
 				MissBecauseHeld = false,
 				NPSGraphAtTop = false,
+				JudgmentTilt = false,
 				ErrorBar = "None",
 				ErrorBarUp = false,
 				ErrorBarMultiTick = false,
+
+				ShowFaPlusWindow = false,
+				ShowEXScore = false,
 			}
 			self.Streams = {
 				-- Chart identifiers for caching purposes.
@@ -73,7 +77,7 @@ local PlayerDefaults = {
 			-- when only a single player is joined (single, double)
 			-- in versus (2 players joined) only EvalPanePrimary will be used
 			self.EvalPanePrimary   = 1 -- large score and judgment counts
-			self.EvalPaneSecondary = 4 -- offset histogram
+			self.EvalPaneSecondary = 5 -- offset histogram
 
 			-- The Groovestats API key loaded for this player
 			self.ApiKey = ""
@@ -377,6 +381,21 @@ SL = {
 
 			InitialValue=0.5,
 		},
+	},
+	ExWeights = {
+		-- W0 is not necessarily a "real" window.
+		-- In ITG mode it is emulated based off the value of TimingWindowW1 defined
+		-- for FA+ mode.
+		W0=3.5,
+		W1=3,
+		W2=2,
+		W3=1,
+		W4=0,
+		W5=0,
+		Miss=0,
+		LetGo=0,
+		Held=1,
+		HitMine=-1
 	},
 	-- Fields used to determine the existence of the launcher and the
 	-- available GrooveStats services.
